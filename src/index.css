@@ -41,52 +41,53 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {
+:root, .dark {
   --radius: 0.5rem; /* Consistent border radius */
-  --background: #DEE4E6; /* Darker with subtle green tint */
-  --foreground: #0A0F17; /* Darker blue-black */
-  --card: #F1F5F2; /* Slightly green-tinted white */
-  --card-foreground: #0A0F17; /* Darker blue-black text */
-  --popover: #F1F5F2; /* Slightly green-tinted white */
-  --popover-foreground: #0A0F17; /* Darker blue-black text */
-  --primary: #1A365D; /* Darker teal-blue */
-  --primary-foreground: #E5EDF1; /* Light gray with green tint */
-  --secondary: #2C5282; /* Darker teal-blue */
-  --secondary-foreground: #E5EDF1; /* Light gray with green tint */
-  --muted: #C1C9CC; /* Gray with subtle green */
-  --muted-foreground: #3A4A5F; /* Darker gray-blue */
-  --accent: #4A5568; /* Muted gray with green tint */
-  --accent-foreground: #0A0F17; /* Darker blue-black text */
-  --destructive: #9B2C2C; /* Darker, muted red */
-  --border: rgba(10, 15, 23, 0.15); /* Darker border */
-  --input: rgba(10, 15, 23, 0.15); /* Darker input border */
-  --ring: #2C5282; /* Darker teal-blue for focus rings */
-  --chart-1: #2C7A7B; /* Darker teal */
-  --chart-2: #B7791F; /* Darker, muted amber */
-  --chart-3: #9B2C2C; /* Darker red */
-  --chart-4: #2C5282; /* Darker teal-blue */
-  --chart-5: #553C9A; /* Muted indigo */
+  --background: #060A12; /* Dark blue-gray base */
+  --foreground: #E8F0F8; /* Light blue-tinted text */
+  --card: #0C1420; /* Dark blue card */
+  --card-foreground: #E8F0F8; /* Light blue-tinted text */
+  --popover: #101A2A; /* Blue-tinted popover */
+  --popover-foreground: #E8F0F8; /* Light blue text */
+  --primary: #1E6BC9; /* Vibrant blue primary */
+  --primary-foreground: #F8FBFF; /* Pure white with blue tint */
+  --secondary: #1A4B8C; /* Deep blue secondary */
+  --secondary-foreground: #F8FBFF; /* Pure white with blue tint */
+  --muted: #1A2435; /* Dark blue-gray */
+  --muted-foreground: #A0B4D0; /* Blue-tinted muted text */
+  --accent: #2A3A5C; /* Blue-tinted dark gray */
+  --accent-foreground: #F8FBFF; /* Pure white with blue tint */
+  --destructive: #D34545; /* Warmer red with blue undertone */
+  --border: rgba(140, 170, 200, 0.3); /* Blue-tinted borders */
+  --input: rgba(140, 170, 200, 0.3); /* Blue-tinted inputs */
+  --ring: #3A8AEA; /* Bright blue focus ring */
+  --chart-1: #1E8AC9; /* Bright blue */
+  --chart-2: #D4A020; /* Warm amber */
+  --chart-3: #D34545; /* Warmer red */
+  --chart-4: #2A5A9E; /* Blue */
+  --chart-5: #5A6BC9; /* Periwinkle blue */
 }
 
-.dark {
-  --background: #080D17; /* Darker green-tinted black */
-  --foreground: #C9D1D9; /* Light gray with subtle green */
-  --card: rgba(8, 13, 23, 0.95); /* Darker with green tint */
-  --card-foreground: #C9D1D9; /* Light gray with subtle green */
-  --popover: #0D131F; /* Dark teal-black */
-  --popover-foreground: #C9D1D9; /* Light gray with subtle green */
-  --primary: #1A4D8C; /* Dark teal-blue */
-  --primary-foreground: #D6E4F0; /* Light gray with teal tint */
-  --secondary: #1E4B7A; /* Darker teal-blue */
-  --secondary-foreground: #D6E4F0; /* Light gray with teal tint */
-  --muted: #1A202C; /* Dark gray with green tint */
-  --muted-foreground: #8B9CB5; /* Muted teal-gray */
-  --accent: #2D3748; /* Dark gray with teal tint */
-  --accent-foreground: #D6E4F0; /* Light gray with teal tint */
-  --destructive: #7F1D1D; /* Darker, muted red */
-  --border: rgba(128, 148, 166, 0.1); /* Teal-tinted subtle border */
-  --input: rgba(128, 148, 166, 0.1); /* Teal-tinted subtle input */
-  --ring: #3182CE; /* Teal-blue for focus rings */
+:root.light {
+  --radius: 0.5rem; /* Consistent border radius */
+  --background: #F0F6FF; /* Light blue-tinted background */
+  --foreground: #050F1A; /* Dark blue-tinted text */
+  --card: #FFFFFF; /* Pure white cards */
+  --card-foreground: #050F1A; /* Dark blue-tinted text */
+  --popover: #FFFFFF; /* Pure white */
+  --popover-foreground: #050F1A; /* Dark blue-tinted text */
+  --primary: #1A5A9E; /* Rich blue primary */
+  --primary-foreground: #FFFFFF; /* White text */
+  --secondary: #1E6BC9; /* Brighter blue */
+  --secondary-foreground: #FFFFFF; /* White text */
+  --muted: #D0E0F0; /* Light blue-tinted muted */
+  --muted-foreground: #2A4A6A; /* Darker blue-tinted text */
+  --accent: #E8F0FF; /* Light blue accent */
+  --accent-foreground: #0A1F3A; /* Dark blue text for accent */
+  --destructive: #C53030; /* Warmer red */
+  --border: rgba(10, 30, 60, 0.15); /* Blue-tinted border */
+  --input: rgba(10, 30, 60, 0.15); /* Blue-tinted input */
+  --ring: #1E6BC9; /* Blue focus ring */
 }
 
 @layer base {
