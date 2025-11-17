@@ -43,50 +43,50 @@
 
 :root {
   --radius: 0.625rem;
-  --background: 255 255 186; /* Cream */
-  --foreground: 22 15 41; /* Midnight */
-  --card: 255 255 255 / 0.25; /* Surface - White with 25% opacity */
-  --card-foreground: 22 15 41; /* Midnight */
-  --popover: 255 255 255;
-  --popover-foreground: 22 15 41;
-  --primary: 36 106 115; /* StormyTeal */
-  --primary-foreground: 243 243 243; /* Light */
-  --secondary: 54 143 139; /* DarkCyan */
-  --secondary-foreground: 243 243 243; /* Light */
-  --muted: 240 240 240;
-  --muted-foreground: 140 140 140;
-  --accent: 255 172 129; /* Tangerine */
-  --accent-foreground: 22 15 41; /* Midnight */
-  --destructive: 239 68 68; /* Error */
-  --border: 255 255 255 / 0.45; /* Glass Border */
-  --input: 255 255 255 / 0.45;
-  --ring: 54 143 139; /* DarkCyan */
-  --chart-1: 16 185 129; /* Success */
-  --chart-2: 245 158 11; /* Warning */
-  --chart-3: 239 68 68; /* Error */
-  --chart-4: 36 106 115; /* Info */
-  --chart-5: 255 172 129; /* Tangerine */
+  --background: #FFFFBA; /* Cream */
+  --foreground: #160F29; /* Midnight */
+  --card: rgba(255, 255, 255, 0.25); /* Surface - White with 25% opacity */
+  --card-foreground: #160F29; /* Midnight */
+  --popover: #FFFFFF;
+  --popover-foreground: #160F29;
+  --primary: #246A73; /* StormyTeal */
+  --primary-foreground: #F3F3F3; /* Light */
+  --secondary: #368F8B; /* DarkCyan */
+  --secondary-foreground: #F3F3F3; /* Light */
+  --muted: #F0F0F0;
+  --muted-foreground: #8C8C8C;
+  --accent: #FFAC81; /* Tangerine */
+  --accent-foreground: #160F29; /* Midnight */
+  --destructive: #EF4444; /* Error */
+  --border: rgba(255, 255, 255, 0.45); /* Glass Border */
+  --input: rgba(255, 255, 255, 0.45);
+  --ring: #368F8B; /* DarkCyan */
+  --chart-1: #10B981; /* Success */
+  --chart-2: #F59E0B; /* Warning */
+  --chart-3: #EF4444; /* Error */
+  --chart-4: #246A73; /* Info */
+  --chart-5: #FFAC81; /* Tangerine */
 }
 
 .dark {
-  --background: 22 15 41; /* Midnight */
-  --foreground: 243 243 243; /* Light */
-  --card: 22 15 41 / 0.5; /* Midnight with 50% opacity for dark card */
-  --card-foreground: 243 243 243;
-  --popover: 22 15 41;
-  --popover-foreground: 243 243 243;
-  --primary: 36 106 115; /* StormyTeal */
-  --primary-foreground: 243 243 243;
-  --secondary: 54 143 139; /* DarkCyan */
-  --secondary-foreground: 243 243 243;
-  --muted: 40 30 60;
-  --muted-foreground: 180 180 180;
-  --accent: 255 172 129; /* Tangerine */
-  --accent-foreground: 22 15 41;
-  --destructive: 239 68 68;
-  --border: 255 255 186 / 0.2; /* Cream with alpha */
-  --input: 255 255 186 / 0.15;
-  --ring: 255 172 129; /* Tangerine */
+  --background: #16103D; /* Midnight */
+  --foreground: #F3F3F3; /* Light */
+  --card: #16103D / 0.5; /* Midnight with 50% opacity for dark card */
+  --card-foreground: #F3F3F3;
+  --popover: #16103D;
+  --popover-foreground: #F3F3F3;
+  --primary: #160F29; /* Midnight */
+  --primary-foreground: #F3F3F3;
+  --secondary: #368F8B; /* DarkCyan */
+  --secondary-foreground: #F3F3F3;
+  --muted: #281E3C;
+  --muted-foreground: #B4B4B4;
+  --accent: #FFAC81; /* Tangerine */
+  --accent-foreground: #160F29;
+  --destructive: #EF4444;
+  --border: rgba(255, 255, 186, 0.2); /* Cream with alpha */
+  --input: rgba(255, 255, 186, 0.15);
+  --ring: #FFAC81; /* Tangerine */
 }
 
 @layer base {
