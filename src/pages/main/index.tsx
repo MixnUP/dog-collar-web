@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { useDogCollarStore } from "@/stores/dog-collar-store";
 import { unparse } from "papaparse";
 import { useState } from "react";
+import { BarChart3, Download, List } from "lucide-react";
 
 const MainPage = () => {
   const { data } = useDogCollarStore();
@@ -34,69 +35,115 @@ const MainPage = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setIsExporting(false);
+    setTimeout(() => setIsExporting(false), 500);
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Analytics Dashboard</h1>
+    <main className="min-h-screen w-full p-4 sm:p-6 lg:p-8">
+      <header className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+          Analytics Dashboard
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Insights from the dog collar proximity data.
+        </p>
+      </header>
 
-      <Card className="mb-4">
+      <Card className="mb-8 bg-card/75 border-border backdrop-blur-sm">
         <CardHeader>
-          <CardTitle>Main Graph</CardTitle>
-          <CardDescription>A visual representation of the data.</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-6 w-6" />
+            <span>Main Graph</span>
+          </CardTitle>
+          <CardDescription>
+            A visual representation of the data.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
-              <div className="h-64 border rounded-lg flex items-center justify-center">
-                <p>Graph Placeholder</p>
+              <div className="h-80 rounded-lg flex items-center justify-center bg-background/40 border-2 border-dashed border-border">
+                <div className="text-center text-muted-foreground">
+                  <BarChart3 className="h-12 w-12 mx-auto mb-2" />
+                  <p>Graph Placeholder</p>
+                </div>
               </div>
             </div>
             <div className="md:col-span-1">
-              <h3 className="text-lg font-semibold mb-2">Graph Legend</h3>
-              <p>Legend items will go here.</p>
+              <h3 className="text-lg font-semibold mb-4">Graph Legend</h3>
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <span className="h-4 w-4 rounded-full bg-primary mr-2"></span>
+                  <span>Proximity Group A</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="h-4 w-4 rounded-full bg-accent mr-2"></span>
+                  <span>Proximity Group B</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="h-4 w-4 rounded-full bg-secondary mr-2"></span>
+                  <span>Proximity Group C</span>
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-card/75 border-border backdrop-blur-sm">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Data Table</CardTitle>
-            <CardDescription>Raw data per person.</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <List className="h-6 w-6" />
+              <span>Data Table</span>
+            </CardTitle>
+            <CardDescription>
+              Raw data collected from the sensors.
+            </CardDescription>
           </div>
           <Button onClick={handleExport} disabled={isExporting}>
+            <Download className="mr-2 h-4 w-4" />
             {isExporting ? "Exporting..." : "Export to CSV"}
           </Button>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Person</TableHead>
-                <TableHead>Visit</TableHead>
-                <TableHead>Proximity</TableHead>
-                <TableHead>Near Time Start</TableHead>
-                <TableHead>Near Time End</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.map((row, index) => (
-                <TableRow key={index}>
-                  <TableCell>{row.person}</TableCell>
-                  <TableCell>{row.visit}</TableCell>
-                  <TableCell>{row.proximity}</TableCell>
-                  <TableCell>{row.near_time_start}</TableCell>
-                  <TableCell>{row.near_time_end}</TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border/50">
+                  <TableHead>Person</TableHead>
+                  <TableHead>Visit</TableHead>
+                  <TableHead>Proximity</TableHead>
+                  <TableHead>Near Time Start</TableHead>
+                  <TableHead>Near Time End</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {data.length > 0 ? (
+                  data.map((row, index) => (
+                    <TableRow key={index} className="border-border/50">
+                      <TableCell className="font-medium">
+                        {row.person}
+                      </TableCell>
+                      <TableCell>{row.visit}</TableCell>
+                      <TableCell>{row.proximity}</TableCell>
+                      <TableCell>{row.near_time_start}</TableCell>
+                      <TableCell>{row.near_time_end}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      No data available.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
-    </div>
+    </main>
   );
 };
 
