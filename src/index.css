@@ -45,7 +45,7 @@
   --radius: 0.625rem;
   --background: 255 255 186; /* Cream */
   --foreground: 22 15 41; /* Midnight */
-  --card: 255 255 255; /* Surface - White for card background */
+  --card: 255 255 255 / 0.25; /* Surface - White with 25% opacity */
   --card-foreground: 22 15 41; /* Midnight */
   --popover: 255 255 255;
   --popover-foreground: 22 15 41;
@@ -71,7 +71,7 @@
 .dark {
   --background: 22 15 41; /* Midnight */
   --foreground: 243 243 243; /* Light */
-  --card: 36 106 115 / 0.1; /* StormyTeal with alpha */
+  --card: 22 15 41 / 0.5; /* Midnight with 50% opacity for dark card */
   --card-foreground: 243 243 243;
   --popover: 22 15 41;
   --popover-foreground: 243 243 243;

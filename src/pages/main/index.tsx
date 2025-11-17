@@ -49,7 +49,7 @@ const MainPage = () => {
         </p>
       </header>
 
-      <Card className="mb-8 bg-card/75 border-border backdrop-blur-sm">
+      <Card className="mb-8 bg-card border-border backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="h-6 w-6" />
@@ -62,7 +62,7 @@ const MainPage = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
-              <div className="h-80 rounded-lg flex items-center justify-center bg-background/40 border-2 border-dashed border-border">
+              <div className="h-80 rounded-lg flex items-center justify-center bg-background/40 border-2 border-dashed border-primary">
                 <div className="text-center text-muted-foreground">
                   <BarChart3 className="h-12 w-12 mx-auto mb-2" />
                   <p>Graph Placeholder</p>
@@ -90,7 +90,7 @@ const MainPage = () => {
         </CardContent>
       </Card>
 
-      <Card className="bg-card/75 border-border backdrop-blur-sm">
+      <Card className="bg-card border-border backdrop-blur-sm">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
@@ -109,13 +109,13 @@ const MainPage = () => {
         <CardContent>
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-secondary">
                 <TableRow className="border-border/50">
-                  <TableHead>Person</TableHead>
-                  <TableHead>Visit</TableHead>
-                  <TableHead>Proximity</TableHead>
-                  <TableHead>Near Time Start</TableHead>
-                  <TableHead>Near Time End</TableHead>
+                  <TableHead className="text-primary-foreground">Person</TableHead>
+                  <TableHead className="text-primary-foreground">Visit</TableHead>
+                  <TableHead className="text-primary-foreground">Proximity</TableHead>
+                  <TableHead className="text-primary-foreground">Near Time Start</TableHead>
+                  <TableHead className="text-primary-foreground">Near Time End</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
