@@ -2,33 +2,67 @@
 
 ## Colors
 
-### Brand Colors
-- Cream: `#FFFFBA`
-- Tangerine: `#FFAC81`
-- Midnight: `#160F29`
-- StormyTeal: `#246A73`
-- DarkCyan: `#368F8B`
+### Theme Colors
 
-### Color Roles
+#### Dark Theme (Default)
 - **Background**
-  - Primary: `#FFFFBA` (Cream)
-  - Surface: `rgba(255, 255, 255, 0.25)` (Glass effect)
-  - Glass Border: `rgba(255, 255, 255, 0.45)`
+  - Base: `#060A12`
+  - Card: `#0C1420`
+  - Popover: `#101A2A`
+  - Muted: `#1A2435`
+  - Accent: `#2A3A5C`
 
 - **Text**
-  - Primary: `#160F29` (Midnight)
-  - Light: `#F3F3F3`
+  - Primary: `#E8F0F8`
+  - Muted: `#A0B4D0`
 
-- **Buttons**
-  - Primary: `#246A73` (StormyTeal)
-  - Primary Hover: `#368F8B` (DarkCyan)
-  - Accent: `#FFAC81` (Tangerine)
+- **Interactive**
+  - Primary: `#1E6BC9`
+  - Primary Hover: `#3A8AEA`
+  - Secondary: `#1A4B8C`
+  - Accent: `#2A3A5C`
+  - Destructive: `#D34545`
+
+- **Borders & Inputs**
+  - Border: `rgba(140, 170, 200, 0.3)`
+  - Input: `rgba(140, 170, 200, 0.3)`
+  - Ring: `#3A8AEA`
+
+#### Light Theme
+- **Background**
+  - Base: `#F0F6FF`
+  - Card: `#FFFFFF`
+  - Muted: `#D0E0F0`
+  - Accent: `#E8F0FF`
+
+- **Text**
+  - Primary: `#050F1A`
+  - Muted: `#2A4A6A`
+
+- **Interactive**
+  - Primary: `#1A5A9E`
+  - Primary Hover: `#1E6BC9`
+  - Secondary: `#1E6BC9`
+  - Accent: `#E8F0FF`
+  - Destructive: `#C53030`
+
+- **Borders & Inputs**
+  - Border: `rgba(10, 30, 60, 0.15)`
+  - Input: `rgba(10, 30, 60, 0.15)`
+  - Ring: `#1E6BC9`
+
+### Chart Colors
+- Chart 1: `#1E8AC9` (Blue)
+- Chart 2: `#D4A020` (Amber)
+- Chart 3: `#D34545` (Red)
+- Chart 4: `#2A5A9E` (Blue)
+- Chart 5: `#5A6BC9` (Periwinkle)
 
 ### Status Colors
 - Success: `#10b981`
 - Warning: `#f59e0b`
 - Error: `#ef4444`
-- Info: `#246A73` (Using StormyTeal for consistency)
+- Info: `#3A8AEA` (Using primary blue for consistency)
 
 ## Typography
 
