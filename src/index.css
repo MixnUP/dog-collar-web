@@ -42,51 +42,51 @@
 }
 
 :root {
-  --radius: 0.5rem; /* Slightly smaller radius for light theme */
-  --background: #F8F8E0; /* Desaturated Cream */
-  --foreground: #1E172E; /* Slightly desaturated Midnight */
-  --card: #FFFFFF; /* White for cards in light mode */
-  --card-foreground: #1E172E; /* Desaturated Midnight */
-  --popover: #FFFFFF; /* White for popovers */
-  --popover-foreground: #1E172E; /* Desaturated Midnight */
-  --primary: #3A7D85; /* Desaturated Stormy Teal */
-  --primary-foreground: #FFFFFF; /* White text on primary */
-  --secondary: #4A8F8B; /* Desaturated Dark Cyan */
-  --secondary-foreground: #FFFFFF; /* White text on secondary */
-  --muted: #F0F0E8; /* Desaturated light cream */
-  --muted-foreground: #6A6475; /* More muted text */
-  --accent: #E0B39A; /* Desaturated Tangerine */
-  --accent-foreground: #1E172E; /* Desaturated Midnight */
-  --destructive: #D65C5C; /* Desaturated red */
-  --border: rgba(30, 23, 46, 0.08); /* More subtle border */
-  --input: rgba(30, 23, 46, 0.1); /* Subtle input border */
-  --ring: #4A8F8B; /* Desaturated Dark Cyan for focus rings */
-  --chart-1: #2FAE8F; /* Desaturated Success */
-  --chart-2: #E0A84A; /* Desaturated Warning */
-  --chart-3: #D65C5C; /* Desaturated Error */
-  --chart-4: #3A7D85; /* Desaturated Info */
-  --chart-5: #E0B39A; /* Desaturated Tangerine */
+  --radius: 0.5rem; /* Consistent border radius */
+  --background: #DEE4E6; /* Darker with subtle green tint */
+  --foreground: #0A0F17; /* Darker blue-black */
+  --card: #F1F5F2; /* Slightly green-tinted white */
+  --card-foreground: #0A0F17; /* Darker blue-black text */
+  --popover: #F1F5F2; /* Slightly green-tinted white */
+  --popover-foreground: #0A0F17; /* Darker blue-black text */
+  --primary: #1A365D; /* Darker teal-blue */
+  --primary-foreground: #E5EDF1; /* Light gray with green tint */
+  --secondary: #2C5282; /* Darker teal-blue */
+  --secondary-foreground: #E5EDF1; /* Light gray with green tint */
+  --muted: #C1C9CC; /* Gray with subtle green */
+  --muted-foreground: #3A4A5F; /* Darker gray-blue */
+  --accent: #4A5568; /* Muted gray with green tint */
+  --accent-foreground: #0A0F17; /* Darker blue-black text */
+  --destructive: #9B2C2C; /* Darker, muted red */
+  --border: rgba(10, 15, 23, 0.15); /* Darker border */
+  --input: rgba(10, 15, 23, 0.15); /* Darker input border */
+  --ring: #2C5282; /* Darker teal-blue for focus rings */
+  --chart-1: #2C7A7B; /* Darker teal */
+  --chart-2: #B7791F; /* Darker, muted amber */
+  --chart-3: #9B2C2C; /* Darker red */
+  --chart-4: #2C5282; /* Darker teal-blue */
+  --chart-5: #553C9A; /* Muted indigo */
 }
 
 .dark {
-  --background: #1E172E; /* Desaturated Midnight */
-  --foreground: #F0F0D0; /* Desaturated Cream */
-  --card: rgba(30, 23, 46, 0.5); /* Desaturated Midnight with 50% opacity */
-  --card-foreground: #F0F0D0; /* Desaturated Cream */
-  --popover: #1E172E; /* Desaturated Midnight */
-  --popover-foreground: #F0F0D0; /* Desaturated Cream */
-  --primary: #3A7D85; /* Desaturated Stormy Teal */
-  --primary-foreground: #F0F0D0; /* Desaturated Cream */
-  --secondary: #4A8F8B; /* Desaturated Dark Cyan */
-  --secondary-foreground: #F0F0D0; /* Desaturated Cream */
-  --muted: #2A2545; /* Desaturated and slightly lighter Midnight */
-  --muted-foreground: #B8B8A0; /* More muted cream */
-  --accent: #E0B39A; /* Desaturated Tangerine */
-  --accent-foreground: #1E172E; /* Desaturated Midnight */
-  --destructive: #D65C5C; /* Desaturated red */
-  --border: rgba(240, 240, 208, 0.15); /* More subtle border */
-  --input: rgba(240, 240, 208, 0.1); /* More subtle input border */
-  --ring: #E0B39A; /* Desaturated Tangerine */
+  --background: #080D17; /* Darker green-tinted black */
+  --foreground: #C9D1D9; /* Light gray with subtle green */
+  --card: rgba(8, 13, 23, 0.95); /* Darker with green tint */
+  --card-foreground: #C9D1D9; /* Light gray with subtle green */
+  --popover: #0D131F; /* Dark teal-black */
+  --popover-foreground: #C9D1D9; /* Light gray with subtle green */
+  --primary: #1A4D8C; /* Dark teal-blue */
+  --primary-foreground: #D6E4F0; /* Light gray with teal tint */
+  --secondary: #1E4B7A; /* Darker teal-blue */
+  --secondary-foreground: #D6E4F0; /* Light gray with teal tint */
+  --muted: #1A202C; /* Dark gray with green tint */
+  --muted-foreground: #8B9CB5; /* Muted teal-gray */
+  --accent: #2D3748; /* Dark gray with teal tint */
+  --accent-foreground: #D6E4F0; /* Light gray with teal tint */
+  --destructive: #7F1D1D; /* Darker, muted red */
+  --border: rgba(128, 148, 166, 0.1); /* Teal-tinted subtle border */
+  --input: rgba(128, 148, 166, 0.1); /* Teal-tinted subtle input */
+  --ring: #3182CE; /* Teal-blue for focus rings */
 }
 
 @layer base {
