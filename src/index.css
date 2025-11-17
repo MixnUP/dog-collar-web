@@ -1,3 +1,6 @@
+/* Google Fonts - Inter (Body), Plus Jakarta Sans (Headings), JetBrains Mono (Code) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -95,6 +98,13 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  code, kbd, pre, samp, .font-mono {
+    font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
   }
 }
