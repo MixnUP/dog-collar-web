@@ -12,19 +12,35 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-
-
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useDogCollarStore } from "@/stores/dog-collar-store";
-
+import { unparse } from "papaparse";
+import { useState } from "react";
 
 const MainPage = () => {
   const { data } = useDogCollarStore();
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = () => {
+    setIsExporting(true);
+    const csv = unparse(data);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "dog-collar-data.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setIsExporting(false);
+  };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Analytics Dashboard</h1>
-      
+
       <Card className="mb-4">
         <CardHeader>
           <CardTitle>Main Graph</CardTitle>
@@ -46,9 +62,14 @@ const MainPage = () => {
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Data Table</CardTitle>
-          <CardDescription>Raw data per person.</CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Data Table</CardTitle>
+            <CardDescription>Raw data per person.</CardDescription>
+          </div>
+          <Button onClick={handleExport} disabled={isExporting}>
+            {isExporting ? "Exporting..." : "Export to CSV"}
+          </Button>
         </CardHeader>
         <CardContent>
           <Table>
