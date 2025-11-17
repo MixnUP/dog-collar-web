@@ -42,51 +42,51 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: #FFFFBA; /* Cream */
-  --foreground: #160F29; /* Midnight */
-  --card: rgba(255, 255, 255, 0.25); /* Surface - White with 25% opacity */
-  --card-foreground: #160F29; /* Midnight */
-  --popover: #FFFFFF;
-  --popover-foreground: #160F29;
-  --primary: #246A73; /* StormyTeal */
-  --primary-foreground: #F3F3F3; /* Light */
-  --secondary: #368F8B; /* DarkCyan */
-  --secondary-foreground: #F3F3F3; /* Light */
-  --muted: #F0F0F0;
-  --muted-foreground: #8C8C8C;
-  --accent: #FFAC81; /* Tangerine */
-  --accent-foreground: #160F29; /* Midnight */
-  --destructive: #EF4444; /* Error */
-  --border: rgba(255, 255, 255, 0.45); /* Glass Border */
-  --input: rgba(255, 255, 255, 0.45);
-  --ring: #368F8B; /* DarkCyan */
-  --chart-1: #10B981; /* Success */
-  --chart-2: #F59E0B; /* Warning */
-  --chart-3: #EF4444; /* Error */
-  --chart-4: #246A73; /* Info */
-  --chart-5: #FFAC81; /* Tangerine */
+  --radius: 0.5rem; /* Slightly smaller radius for light theme */
+  --background: #F8F8E0; /* Desaturated Cream */
+  --foreground: #1E172E; /* Slightly desaturated Midnight */
+  --card: #FFFFFF; /* White for cards in light mode */
+  --card-foreground: #1E172E; /* Desaturated Midnight */
+  --popover: #FFFFFF; /* White for popovers */
+  --popover-foreground: #1E172E; /* Desaturated Midnight */
+  --primary: #3A7D85; /* Desaturated Stormy Teal */
+  --primary-foreground: #FFFFFF; /* White text on primary */
+  --secondary: #4A8F8B; /* Desaturated Dark Cyan */
+  --secondary-foreground: #FFFFFF; /* White text on secondary */
+  --muted: #F0F0E8; /* Desaturated light cream */
+  --muted-foreground: #6A6475; /* More muted text */
+  --accent: #E0B39A; /* Desaturated Tangerine */
+  --accent-foreground: #1E172E; /* Desaturated Midnight */
+  --destructive: #D65C5C; /* Desaturated red */
+  --border: rgba(30, 23, 46, 0.08); /* More subtle border */
+  --input: rgba(30, 23, 46, 0.1); /* Subtle input border */
+  --ring: #4A8F8B; /* Desaturated Dark Cyan for focus rings */
+  --chart-1: #2FAE8F; /* Desaturated Success */
+  --chart-2: #E0A84A; /* Desaturated Warning */
+  --chart-3: #D65C5C; /* Desaturated Error */
+  --chart-4: #3A7D85; /* Desaturated Info */
+  --chart-5: #E0B39A; /* Desaturated Tangerine */
 }
 
 .dark {
-  --background: #16103D; /* Midnight */
-  --foreground: #F3F3F3; /* Light */
-  --card: #16103D / 0.5; /* Midnight with 50% opacity for dark card */
-  --card-foreground: #F3F3F3;
-  --popover: #16103D;
-  --popover-foreground: #F3F3F3;
-  --primary: #160F29; /* Midnight */
-  --primary-foreground: #F3F3F3;
-  --secondary: #368F8B; /* DarkCyan */
-  --secondary-foreground: #F3F3F3;
-  --muted: #281E3C;
-  --muted-foreground: #B4B4B4;
-  --accent: #FFAC81; /* Tangerine */
-  --accent-foreground: #160F29;
-  --destructive: #EF4444;
-  --border: rgba(255, 255, 186, 0.2); /* Cream with alpha */
-  --input: rgba(255, 255, 186, 0.15);
-  --ring: #FFAC81; /* Tangerine */
+  --background: #1E172E; /* Desaturated Midnight */
+  --foreground: #F0F0D0; /* Desaturated Cream */
+  --card: rgba(30, 23, 46, 0.5); /* Desaturated Midnight with 50% opacity */
+  --card-foreground: #F0F0D0; /* Desaturated Cream */
+  --popover: #1E172E; /* Desaturated Midnight */
+  --popover-foreground: #F0F0D0; /* Desaturated Cream */
+  --primary: #3A7D85; /* Desaturated Stormy Teal */
+  --primary-foreground: #F0F0D0; /* Desaturated Cream */
+  --secondary: #4A8F8B; /* Desaturated Dark Cyan */
+  --secondary-foreground: #F0F0D0; /* Desaturated Cream */
+  --muted: #2A2545; /* Desaturated and slightly lighter Midnight */
+  --muted-foreground: #B8B8A0; /* More muted cream */
+  --accent: #E0B39A; /* Desaturated Tangerine */
+  --accent-foreground: #1E172E; /* Desaturated Midnight */
+  --destructive: #D65C5C; /* Desaturated red */
+  --border: rgba(240, 240, 208, 0.15); /* More subtle border */
+  --input: rgba(240, 240, 208, 0.1); /* More subtle input border */
+  --ring: #E0B39A; /* Desaturated Tangerine */
 }
 
 @layer base {
