@@ -108,3 +108,7 @@
     font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
   }
 }
+
+.recharts-wrapper *:focus {
+  outline: none !important;
+}
