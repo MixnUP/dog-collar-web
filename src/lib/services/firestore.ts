@@ -65,7 +65,7 @@ export const getRecentPersonA = async <T>(): Promise<T[]> => {
   const q = query(
     collection(db, "PersonA"),
     orderBy("timestamp", "desc"),
-    limit(100)
+    limit(1)
   );
   const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as T));
@@ -76,7 +76,7 @@ export const getRecentPersonB = async <T>(): Promise<T[]> => {
   const q = query(
     collection(db, "PersonB"),
     orderBy("timestamp", "desc"),
-    limit(100)
+    limit(1)
   );
   const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as T));

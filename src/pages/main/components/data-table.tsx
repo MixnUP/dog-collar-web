@@ -10,20 +10,88 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { useRecentPersonA, useRecentPersonB } from "@/lib/hooks/useDogCollars";
 import { unparse } from "papaparse";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Download, List } from "lucide-react";
+import { onVisitsUpdate } from "@/lib/services/rtdb";
+
+// Helper function to format timestamp
+const formatTimestamp = (timestamp: any) => {
+  if (!timestamp) return 'N/A';
+  
+  // If it's a Firestore timestamp
+  if (timestamp.toDate) {
+    return new Date(timestamp.toDate()).toLocaleString();
+  }
+  
+  // If it's already a date string or number
+  const date = new Date(timestamp);
+  return isNaN(date.getTime()) ? 'Invalid Date' : date.toLocaleString();
+};
 
 type PersonData = {
   id: string;
+  person: string;
+  near_time_start?: any;
+  near_time_end?: any;
+  visits?: number;
+  proximity?: number;
+  total_time?: number;
+  timestamp?: any;
   [key: string]: any;
+};
+
+type VisitsData = {
+  personA: {
+    visits: number;
+    proximity: number;
+    total_time: number;
+  };
+  personB: {
+    visits: number;
+    proximity: number;
+    total_time: number;
+  };
 };
 
 export const DataTable = () => {
   const { data: personAData, isLoading: isLoadingA } = useRecentPersonA<PersonData>();
   const { data: personBData, isLoading: isLoadingB } = useRecentPersonB<PersonData>();
   const [isExporting, setIsExporting] = useState(false);
+  const [visitsData, setVisitsData] = useState<VisitsData>({
+    personA: { visits: 0, proximity: 0, total_time: 0 },
+    personB: { visits: 0, proximity: 0, total_time: 0 }
+  });
 
-  const data = [...(personAData || []), ...(personBData || [])];
+  // Set up realtime listener for visits data
+  useEffect(() => {
+    const unsubscribe = onVisitsUpdate((data) => {
+      setVisitsData(data);
+    });
+    
+    return () => unsubscribe();
+  }, []);
+
+  // Transform the data to include person identifier and format timestamps
+  const data = [
+    {
+      id: 'person-a',
+      person: 'Person A',
+      visits: visitsData.personA.visits,
+      proximity: visitsData.personA.proximity,
+      total_time: visitsData.personA.total_time,
+      near_time_start: personAData?.[0]?.timestamp || new Date().toISOString(),
+      near_time_end: personAData?.[0]?.timestamp || new Date().toISOString(),
+    },
+    {
+      id: 'person-b',
+      person: 'Person B',
+      visits: visitsData.personB.visits,
+      proximity: visitsData.personB.proximity,
+      total_time: visitsData.personB.total_time,
+      near_time_start: personBData?.[0]?.timestamp || new Date().toISOString(),
+      near_time_end: personBData?.[0]?.timestamp || new Date().toISOString(),
+    }
+  ];
 
   const handleExport = () => {
     setIsExporting(true);
@@ -65,8 +133,9 @@ export const DataTable = () => {
             <TableHeader className="bg-secondary">
               <TableRow className="border-border/50">
                 <TableHead className="text-primary-foreground">Person</TableHead>
-                <TableHead className="text-primary-foreground">Visit</TableHead>
+                <TableHead className="text-primary-foreground">Visits</TableHead>
                 <TableHead className="text-primary-foreground">Proximity</TableHead>
+                <TableHead className="text-primary-foreground">Total Time</TableHead>
                 <TableHead className="text-primary-foreground">Near Time Start</TableHead>
                 <TableHead className="text-primary-foreground">Near Time End</TableHead>
               </TableRow>
@@ -84,10 +153,11 @@ export const DataTable = () => {
                     <TableCell className="font-medium">
                       {row.person}
                     </TableCell>
-                    <TableCell>{row.visit}</TableCell>
-                    <TableCell>{row.proximity}</TableCell>
-                    <TableCell>{row.near_time_start}</TableCell>
-                    <TableCell>{row.near_time_end}</TableCell>
+                    <TableCell>{row.visits ?? 'N/A'}</TableCell>
+                    <TableCell>{row.proximity ?? 'N/A'}</TableCell>
+                    <TableCell>{row.total_time ? `${Math.floor(row.total_time / 60)}m ${row.total_time % 60}s` : 'N/A'}</TableCell>
+                    <TableCell>{formatTimestamp(row.near_time_start)}</TableCell>
+                    <TableCell>{formatTimestamp(row.near_time_end)}</TableCell>
                   </TableRow>
                 ))
               ) : (
