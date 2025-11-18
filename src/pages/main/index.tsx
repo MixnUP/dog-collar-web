@@ -1,53 +1,63 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3 } from "lucide-react";
 import { DataTable } from "./components/data-table";
-import { useDogCollars } from "@/lib/hooks/useDogCollars";
-import { Timestamp } from "firebase/firestore";
+import { useDogCollarStore } from "@/stores/dog-collar-store";
 
-// Helper function to format timestamp
-const formatTimestamp = (timestamp: Date | Timestamp | string | number | undefined): string => {
-  if (!timestamp) return 'N/A';
+// Helper function to format time in seconds to a readable format
+const formatTime = (seconds: number | undefined): string => {
+  if (seconds === undefined || seconds === 0) return '0s';
   
-  let date: Date;
-  if (typeof timestamp === 'string' || typeof timestamp === 'number') {
-    date = new Date(timestamp);
-  } else if (timestamp instanceof Timestamp) {
-    date = timestamp.toDate();
-  } else if (timestamp instanceof Date) {
-    date = timestamp;
-  } else {
-    return 'Invalid Date Type';
-  }
-
-  return isNaN(date.getTime()) ? 'Invalid Date' : date.toLocaleString();
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+  
+  const parts = [];
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}m`);
+  if (secs > 0 || parts.length === 0) parts.push(`${secs}s`);
+  
+  return parts.join(' ');
 };
 
 const MainPage = () => {
-  const { data: dogCollars, isLoading } = useDogCollars();
+  const { 
+    personA, 
+    personB, 
+    isLoading, 
+    error, 
+    subscribe 
+  } = useDogCollarStore();
   
-  // Get the most recent entry for each person
-  const personAData = dogCollars?.filter(item => item.person === 'Person A')[0];
-  const personBData = dogCollars?.filter(item => item.person === 'Person B')[0];
+  // Subscribe to data updates when component mounts
+  useEffect(() => {
+    const unsubscribe = subscribe();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [subscribe]);
   
-  const visitsData = {
-    personA: { 
-      visits: personAData?.visits ?? 0, 
-      total_time: personAData?.total_time ?? 0 
-    },
-    personB: { 
-      visits: personBData?.visits ?? 0, 
-      total_time: personBData?.total_time ?? 0 
-    }
-  };
+  // Show loading state
+  if (isLoading) {
+    return (
+      <main className="min-h-screen w-full p-4 sm:p-6 lg:p-8">
+        <div className="flex items-center justify-center h-64">
+          <p>Loading...</p>
+        </div>
+      </main>
+    );
+  }
   
-  const personAStatus = personAData;
-  const personBStatus = personBData;
+  // Show error state
+  if (error) {
+    return (
+      <main className="min-h-screen w-full p-4 sm:p-6 lg:p-8">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <p>Error loading data: {error.message}</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen w-full p-4 sm:p-6 lg:p-8">
@@ -107,21 +117,22 @@ const MainPage = () => {
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-6 w-6" />
               <span>Person A Status</span>
+              {personA?.last_updated && (
+                <span className="text-xs text-muted-foreground ml-auto">
+                  Updated: {new Date(personA.last_updated).toLocaleTimeString()}
+                </span>
+              )}
             </CardTitle>
             <CardDescription>Current status of Person A's dog collar.</CardDescription>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <p>Loading...</p>
-            ) : (
-              <div className="space-y-2">
-                <p><strong>Visits:</strong> {visitsData.personA.visits ?? 'N/A'}</p>
-
-                <p><strong>Total Time:</strong> {visitsData.personA.total_time ? `${Math.floor(visitsData.personA.total_time / 60)}m ${visitsData.personA.total_time % 60}s` : 'N/A'}</p>
-                <p><strong>Near Time Start:</strong> {formatTimestamp(personAStatus?.near_time_start)}</p>
-                <p><strong>Near Time End:</strong> {formatTimestamp(personAStatus?.near_time_end)}</p>
-              </div>
-            )}
+            <div className="space-y-2">
+              <p><strong>Visits:</strong> {personA?.visits ?? 'N/A'}</p>
+              <p><strong>Proximity:</strong> {personA?.proximity ?? 'N/A'}</p>
+              <p><strong>Total Time:</strong> {personA?.total_time !== undefined ? formatTime(personA.total_time) : 'N/A'}</p>
+              <p><strong>Near Time Start:</strong> {personA?.near_time_start ?? 'N/A'}</p>
+              <p><strong>Near Time End:</strong> {personA?.near_time_end ?? 'N/A'}</p>
+            </div>
           </CardContent>
         </Card>
 
@@ -130,21 +141,22 @@ const MainPage = () => {
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-6 w-6" />
               <span>Person B Status</span>
+              {personB?.last_updated && (
+                <span className="text-xs text-muted-foreground ml-auto">
+                  Updated: {new Date(personB.last_updated).toLocaleTimeString()}
+                </span>
+              )}
             </CardTitle>
             <CardDescription>Current status of Person B's dog collar.</CardDescription>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <p>Loading...</p>
-            ) : (
-              <div className="space-y-2">
-                <p><strong>Visits:</strong> {visitsData.personB.visits ?? 'N/A'}</p>
-
-                <p><strong>Total Time:</strong> {visitsData.personB.total_time ? `${Math.floor(visitsData.personB.total_time / 60)}m ${visitsData.personB.total_time % 60}s` : 'N/A'}</p>
-                <p><strong>Near Time Start:</strong> {formatTimestamp(personBStatus?.near_time_start)}</p>
-                <p><strong>Near Time End:</strong> {formatTimestamp(personBStatus?.near_time_end)}</p>
-              </div>
-            )}
+            <div className="space-y-2">
+              <p><strong>Visits:</strong> {personB?.visits ?? 'N/A'}</p>
+              <p><strong>Proximity:</strong> {personB?.proximity ?? 'N/A'}</p>
+              <p><strong>Total Time:</strong> {personB?.total_time !== undefined ? formatTime(personB.total_time) : 'N/A'}</p>
+              <p><strong>Near Time Start:</strong> {personB?.near_time_start ?? 'N/A'}</p>
+              <p><strong>Near Time End:</strong> {personB?.near_time_end ?? 'N/A'}</p>
+            </div>
           </CardContent>
         </Card>
       </div>
