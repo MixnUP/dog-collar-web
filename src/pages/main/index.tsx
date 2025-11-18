@@ -5,13 +5,15 @@ import { DataTable } from "./components/data-table";
 import VisitsBarChart from "./components/VisitsBarChart"; // Import the new component
 import { useDogCollarStore } from "@/stores/dog-collar-store";
 
-// Helper function to format time in seconds to a readable format
-const formatTime = (seconds: number | undefined): string => {
-  if (seconds === undefined || seconds === 0) return '0s';
+// Helper function to format time in milliseconds to a readable format
+const formatTime = (milliseconds: number | undefined): string => {
+  if (milliseconds === undefined || milliseconds === 0) return '0s';
   
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = Math.floor(seconds % 60);
+  const totalSeconds = Math.floor(milliseconds / 1000); // Convert milliseconds to seconds
+  
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const secs = Math.floor(totalSeconds % 60);
   
   const parts = [];
   if (hours > 0) parts.push(`${hours}h`);

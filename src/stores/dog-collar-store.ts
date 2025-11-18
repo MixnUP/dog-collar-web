@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { onVisitsUpdate } from '@/lib/services/rtdb';
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore'; // Added onSnapshot
 import { db } from '@/lib/firebase';
 
 type PersonStatus = {
@@ -23,21 +23,6 @@ type Store = {
   updatePersonB: (data: Partial<PersonStatus>) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: Error | null) => void;
-};
-
-// Helper function to get recent documents from Firestore
-const getRecentDocuments = async (collectionName: string, limitCount = 50) => {
-  const q = query(
-    collection(db, collectionName),
-    orderBy('timestamp', 'desc'),
-    limit(limitCount)
-  );
-  
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
 };
 
 // Helper function to find the most recent transition between states
@@ -95,6 +80,8 @@ export const useDogCollarStore = create<Store>((set, get) => ({
   setError: (error) => set({ error }),
   
   subscribe: () => {
+    get().setLoading(true);
+
     // Format timestamp helper
     const formatTimestamp = (ts: any): string => {
       if (!ts) return 'N/A';
@@ -106,76 +93,85 @@ export const useDogCollarStore = create<Store>((set, get) => ({
       }
     };
 
-    // Initialize with current data
-    const initialize = async () => {
-      try {
-        get().setLoading(true);
+    // Helper function to process person data from Firestore snapshot
+    const processFirestoreData = (docs: any[], person: 'A' | 'B') => {
+      if (docs.length === 0) return;
+      
+      // Get most recent document
+      const latestDoc = [...docs].sort((a, b) => 
+        (b.timestamp?.toDate?.()?.getTime() || 0) - (a.timestamp?.toDate?.()?.getTime() || 0)
+      )[0];
+      
+      const latestProximity = latestDoc?.proximity;
+      
+      // Get transition times
+      let nearTimeStart = latestProximity === 1 
+        ? formatTimestamp(latestDoc.timestamp)
+        : findTransition(docs, 0, 1);
         
-        // Fetch recent documents for both persons
-        const [personADocs, personBDocs] = await Promise.all([
-          getRecentDocuments('PersonA'),
-          getRecentDocuments('PersonB')
-        ]);
+      let nearTimeEnd = latestProximity === 0
+        ? formatTimestamp(latestDoc.timestamp)
+        : findTransition(docs, 1, 0);
+        
+      // Ensure start time is before end time
+      if (nearTimeStart !== 'N/A' && nearTimeEnd !== 'N/A') {
+        const startTime = new Date(nearTimeStart).getTime();
+        const endTime = new Date(nearTimeEnd).getTime();
+        
+        if (!isNaN(startTime) && !isNaN(endTime) && startTime >= endTime) {
+          // If start time is after or equal to end time, set end time to N/A
+          nearTimeEnd = 'N/A';
+        }
+      }
 
-        // Helper function to process person data
-        const processPersonData = (docs: any[], person: 'A' | 'B') => {
-          if (docs.length === 0) return;
-          
-          // Get most recent document
-          const latestDoc = [...docs].sort((a, b) => 
-            (b.timestamp?.toDate?.()?.getTime() || 0) - (a.timestamp?.toDate?.()?.getTime() || 0)
-          )[0];
-          
-          const latestProximity = latestDoc?.proximity;
-          
-          // Get transition times
-          let nearTimeStart = latestProximity === 1 
-            ? formatTimestamp(latestDoc.timestamp)
-            : findTransition(docs, 0, 1);
-            
-          let nearTimeEnd = latestProximity === 0
-            ? formatTimestamp(latestDoc.timestamp)
-            : findTransition(docs, 1, 0);
-            
-          // Ensure start time is before end time
-          if (nearTimeStart !== 'N/A' && nearTimeEnd !== 'N/A') {
-            const startTime = new Date(nearTimeStart).getTime();
-            const endTime = new Date(nearTimeEnd).getTime();
-            
-            if (!isNaN(startTime) && !isNaN(endTime) && startTime >= endTime) {
-              // If start time is after or equal to end time, set end time to N/A
-              nearTimeEnd = 'N/A';
-            }
-          }
+      const updateData = {
+        near_time_start: nearTimeStart,
+        near_time_end: nearTimeEnd,
+        // last_updated for Firestore data is not explicitly set here,
+        // as RTDB listener handles the main last_updated for visits/proximity/total_time
+      };
 
-          const updateData = {
-            near_time_start: nearTimeStart,
-            near_time_end: nearTimeEnd,
-            last_updated: new Date().toLocaleString()
-          };
-
-          // Update the appropriate person
-          if (person === 'A') {
-            get().updatePersonA(updateData);
-          } else {
-            get().updatePersonB(updateData);
-          }
-        };
-
-        // Process both persons
-        processPersonData(personADocs, 'A');
-        processPersonData(personBDocs, 'B');
-      } catch (error) {
-        console.error('Error initializing store:', error);
-        get().setError(error instanceof Error ? error : new Error('Failed to initialize store'));
-      } finally {
-        get().setLoading(false);
+      // Update the appropriate person
+      if (person === 'A') {
+        get().updatePersonA(updateData);
+      } else {
+        get().updatePersonB(updateData);
       }
     };
+
+    // Set up Firestore listeners for real-time near_time_start/end
+    const unsubscribeFirestoreA = onSnapshot(
+      query(collection(db, 'PersonA'), orderBy('timestamp', 'desc'), limit(50)),
+      (snapshot) => {
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        processFirestoreData(docs, 'A');
+        get().setLoading(false); // Set loading to false after initial data is fetched
+      },
+      (error) => {
+        console.error('Error listening to PersonA Firestore:', error);
+        get().setError(error);
+        get().setLoading(false);
+      }
+    );
+
+    const unsubscribeFirestoreB = onSnapshot(
+      query(collection(db, 'PersonB'), orderBy('timestamp', 'desc'), limit(50)),
+      (snapshot) => {
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        processFirestoreData(docs, 'B');
+        get().setLoading(false); // Set loading to false after initial data is fetched
+      },
+      (error) => {
+        console.error('Error listening to PersonB Firestore:', error);
+        get().setError(error);
+        get().setLoading(false);
+      }
+    );
 
     // Set up RTDB listener
     const unsubscribeRTDB = onVisitsUpdate(({ personA, personB }) => {
       const now = new Date();
+      console.log(`RTDB update received at ${now.toLocaleTimeString()}`);
       get().updatePersonA({
         visits: personA.visits,
         proximity: personA.proximity,
@@ -191,12 +187,11 @@ export const useDogCollarStore = create<Store>((set, get) => ({
       });
     });
 
-    // Initialize with current data
-    initialize();
-
     // Return cleanup function
     return () => {
       unsubscribeRTDB();
+      unsubscribeFirestoreA();
+      unsubscribeFirestoreB();
     };
   }
 }));
