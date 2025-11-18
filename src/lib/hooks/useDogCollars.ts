@@ -18,10 +18,12 @@ const COLLECTION_NAMES = {
   PERSON_B: "PersonB"
 } as const;
 
-export const useDogCollars = () => {
-  return useQuery<DogCollar[], Error>({
-    queryKey: ["dog-collars"],
+export const useDogCollars = (limit: number, offset: number) => {
+  return useQuery<{ data: DogCollar[], totalCount: number }, Error>({
+    queryKey: ["dog-collars", { limit, offset }],
     queryFn: async () => {
+      const startIndex = offset * limit;
+
       const [personADocs, personBDocs] = await Promise.all([
         getDocs(query(collection(db, COLLECTION_NAMES.PERSON_A), orderBy("timestamp", "desc"))),
         getDocs(query(collection(db, COLLECTION_NAMES.PERSON_B), orderBy("timestamp", "desc")))
@@ -34,13 +36,10 @@ export const useDogCollars = () => {
           id: doc.id,
           person: "Person A",
           ...data,
-          // Ensure timestamp is a Date object for consistent sorting
           timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : data.timestamp,
           near_time_start: data.near_time_start?.toDate ? data.near_time_start.toDate() : data.near_time_start,
           near_time_end: data.near_time_end?.toDate ? data.near_time_end.toDate() : data.near_time_end,
-          // Ensure total_time is properly handled (it might come as totalTime from Firestore)
           total_time: data.total_time ?? data.totalTime ?? 0,
-          // Ensure other numeric fields are properly handled
           visits: data.visits ?? 0,
           proximity: data.proximity ?? 0
         };
@@ -52,13 +51,10 @@ export const useDogCollars = () => {
           id: doc.id,
           person: "Person B",
           ...data,
-          // Ensure timestamp is a Date object for consistent sorting
           timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : data.timestamp,
           near_time_start: data.near_time_start?.toDate ? data.near_time_start.toDate() : data.near_time_start,
           near_time_end: data.near_time_end?.toDate ? data.near_time_end.toDate() : data.near_time_end,
-          // Ensure total_time is properly handled (it might come as totalTime from Firestore)
           total_time: data.total_time ?? data.totalTime ?? 0,
-          // Ensure other numeric fields are properly handled
           visits: data.visits ?? 0,
           proximity: data.proximity ?? 0
         };
@@ -71,7 +67,17 @@ export const useDogCollars = () => {
         return dateB - dateA; // Sort in descending order (newest first)
       });
 
-      return mergedData as DogCollar[];
+      // Apply client-side slice to get the current page's data
+      const paginatedData = mergedData.slice(startIndex, startIndex + limit);
+
+      // Fetch total count (separate queries)
+      const [personACountSnapshot, personBCountSnapshot] = await Promise.all([
+        getDocs(collection(db, COLLECTION_NAMES.PERSON_A)),
+        getDocs(collection(db, COLLECTION_NAMES.PERSON_B))
+      ]);
+      const totalCount = personACountSnapshot.size + personBCountSnapshot.size;
+
+      return { data: paginatedData, totalCount };
     },
   });
 };

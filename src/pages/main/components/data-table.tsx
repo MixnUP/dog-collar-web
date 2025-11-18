@@ -59,11 +59,16 @@ type DogCollar = {
 };
 
 export const DataTable = () => {
-  const { data: dogCollars, isLoading } = useDogCollars();
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
+  const { data: paginatedData, isLoading } = useDogCollars(rowsPerPage, currentPage - 1); // currentPage - 1 for 0-based offset
   const [isExporting, setIsExporting] = useState(false);
 
-  // Transform the data to include person identifier and format timestamps
-  const data: DogCollar[] = dogCollars || [];
+  const data: DogCollar[] = paginatedData?.data || [];
+  const totalCount = paginatedData?.totalCount || 0;
+
+
+  const totalPages = Math.ceil(totalCount / rowsPerPage);
 
   const handleExport = () => {
     setIsExporting(true);
@@ -138,6 +143,29 @@ export const DataTable = () => {
             </TableBody>
           </Table>
         </div>
+        {totalCount > rowsPerPage && (
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
