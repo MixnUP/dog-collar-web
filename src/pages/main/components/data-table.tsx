@@ -110,11 +110,11 @@ export const DataTable = () => {
             Raw data collected from the sensors.
           </CardDescription>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           <select
             value={selectedPersonFilter}
             onChange={(e) => setSelectedPersonFilter(e.target.value as "All" | "Person A" | "Person B")}
-            className="p-2 border rounded-md bg-card text-foreground border-border"
+            className="p-2 border rounded-md bg-card text-foreground border-border w-full md:w-auto"
           >
             <option value="All">All Persons</option>
             <option value="Person A">Person A</option>
@@ -123,7 +123,7 @@ export const DataTable = () => {
           <select
             value={selectedSortFilter}
             onChange={(e) => setSelectedSortFilter(e.target.value as "All" | "Ascending" | "Descending" | "Visits" | "Total Time")}
-            className="p-2 border rounded-md bg-card text-foreground border-border"
+            className="p-2 border rounded-md bg-card text-foreground border-border w-full md:w-auto"
           >
             <option value="All">Sort By (Default)</option>
             <option value="Ascending">Timestamp (Asc)</option>
@@ -131,7 +131,7 @@ export const DataTable = () => {
             <option value="Visits">Visits</option>
             <option value="Total Time">Total Time</option>
           </select>
-          <Button onClick={handleExport} disabled={isExporting || isLoadingAllData || !allDataForExport?.data.length}>
+          <Button onClick={handleExport} disabled={isExporting || isLoadingAllData || !allDataForExport?.data.length} className="w-full md:w-auto">
             <Download className="mr-2 h-4 w-4" />
             {isExporting ? "Exporting..." : "Export to CSV"}
           </Button>
