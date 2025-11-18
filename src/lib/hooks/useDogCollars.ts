@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Timestamp } from "firebase/firestore";
 import { 
   collection, 
   getDocs, 
@@ -18,64 +19,95 @@ const COLLECTION_NAMES = {
   PERSON_B: "PersonB"
 } as const;
 
-export const useDogCollars = (limit: number, offset: number) => {
+export const useDogCollars = (limit: number, offset: number, personFilter: "All" | "Person A" | "Person B", sortFilter: "All" | "Ascending" | "Descending" | "Visits" | "Total Time") => {
   return useQuery<{ data: DogCollar[], totalCount: number }, Error>({
-    queryKey: ["dog-collars", { limit, offset }],
+    queryKey: ["dog-collars", { limit, offset, personFilter, sortFilter }],
     queryFn: async () => {
       const startIndex = offset * limit;
 
-      const [personADocs, personBDocs] = await Promise.all([
-        getDocs(query(collection(db, COLLECTION_NAMES.PERSON_A), orderBy("timestamp", "desc"))),
-        getDocs(query(collection(db, COLLECTION_NAMES.PERSON_B), orderBy("timestamp", "desc")))
-      ]);
+      let personAData: DogCollar[] = [];
+      let personBData: DogCollar[] = [];
+      let totalCount = 0;
 
-      // Map and add person identifier to each document
-      const personAData = personADocs.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          person: "Person A",
-          ...data,
-          timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : data.timestamp,
-          near_time_start: data.near_time_start?.toDate ? data.near_time_start.toDate() : data.near_time_start,
-          near_time_end: data.near_time_end?.toDate ? data.near_time_end.toDate() : data.near_time_end,
-          total_time: data.total_time ?? data.totalTime ?? 0,
-          visits: data.visits ?? 0,
-          proximity: data.proximity ?? 0
-        };
-      });
+      const getOrderByClause = (filter: typeof sortFilter) => {
+        switch (filter) {
+          case "Ascending":
+            return orderBy("timestamp", "asc");
+          case "Visits":
+            return orderBy("visits", "desc"); // Assuming descending for higher visits
+          case "Total Time":
+            return orderBy("totalTime", "desc"); // Corrected to totalTime
+          case "Descending":
+          case "All":
+          default:
+            return orderBy("timestamp", "desc");
+        }
+      };
 
-      const personBData = personBDocs.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          person: "Person B",
-          ...data,
-          timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : data.timestamp,
-          near_time_start: data.near_time_start?.toDate ? data.near_time_start.toDate() : data.near_time_start,
-          near_time_end: data.near_time_end?.toDate ? data.near_time_end.toDate() : data.near_time_end,
-          total_time: data.total_time ?? data.totalTime ?? 0,
-          visits: data.visits ?? 0,
-          proximity: data.proximity ?? 0
-        };
-      });
+      const orderByClause = getOrderByClause(sortFilter);
+
+      const fetchAndMapData = async (collectionName: string, personId: "Person A" | "Person B") => {
+        const q = query(collection(db, collectionName), orderByClause);
+        const docs = await getDocs(q);
+        return docs.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            person: personId,
+            ...data,
+            timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : data.timestamp,
+            near_time_start: data.near_time_start?.toDate ? data.near_time_start.toDate() : data.near_time_start,
+            near_time_end: data.near_time_end?.toDate ? data.near_time_end.toDate() : data.near_time_end,
+            total_time: data.total_time ?? data.totalTime ?? 0,
+            visits: data.visits ?? 0,
+            proximity: data.proximity ?? 0
+          };
+        });
+      };
+
+      const fetchCount = async (collectionName: string) => {
+        const snapshot = await getDocs(collection(db, collectionName));
+        return snapshot.size;
+      };
+
+      if (personFilter === "All" || personFilter === "Person A") {
+        personAData = await fetchAndMapData(COLLECTION_NAMES.PERSON_A, "Person A");
+        totalCount += await fetchCount(COLLECTION_NAMES.PERSON_A);
+      }
+      if (personFilter === "All" || personFilter === "Person B") {
+        personBData = await fetchAndMapData(COLLECTION_NAMES.PERSON_B, "Person B");
+        totalCount += await fetchCount(COLLECTION_NAMES.PERSON_B);
+      }
 
       // Merge both arrays and sort by timestamp in descending order
-      const mergedData = [...personAData, ...personBData].sort((a, b) => {
-        const dateA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
-        const dateB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
-        return dateB - dateA; // Sort in descending order (newest first)
+      let mergedData = [...personAData, ...personBData];
+
+      mergedData.sort((a, b) => {
+        // Custom sorting logic for "Visits" and "Total Time" if not handled by Firestore orderBy
+        // Firestore orderBy handles single field sorting. For merged data, if sortFilter is not timestamp,
+        // we need to re-sort here.
+        if (sortFilter === "Visits") {
+          return (b.visits ?? 0) - (a.visits ?? 0);
+        }
+        if (sortFilter === "Total Time") {
+          return (b.total_time ?? 0) - (a.total_time ?? 0);
+        }
+        // Helper function to convert any timestamp format to milliseconds
+        const toMilliseconds = (timestamp: string | Date | Timestamp | undefined): number => {
+          if (!timestamp) return 0;
+          if (timestamp instanceof Date) return timestamp.getTime();
+          if (typeof timestamp === 'string') return new Date(timestamp).getTime();
+          if (timestamp.toDate) return timestamp.toDate().getTime();
+          return 0;
+        };
+        
+        const dateA = toMilliseconds(a.timestamp);
+        const dateB = toMilliseconds(b.timestamp);
+        return sortFilter === "Ascending" ? dateA - dateB : dateB - dateA;
       });
 
       // Apply client-side slice to get the current page's data
       const paginatedData = mergedData.slice(startIndex, startIndex + limit);
-
-      // Fetch total count (separate queries)
-      const [personACountSnapshot, personBCountSnapshot] = await Promise.all([
-        getDocs(collection(db, COLLECTION_NAMES.PERSON_A)),
-        getDocs(collection(db, COLLECTION_NAMES.PERSON_B))
-      ]);
-      const totalCount = personACountSnapshot.size + personBCountSnapshot.size;
 
       return { data: paginatedData, totalCount };
     },

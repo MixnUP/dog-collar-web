@@ -61,7 +61,10 @@ type DogCollar = {
 export const DataTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
-  const { data: paginatedData, isLoading } = useDogCollars(rowsPerPage, currentPage - 1); // currentPage - 1 for 0-based offset
+  const [selectedPersonFilter, setSelectedPersonFilter] = useState<"All" | "Person A" | "Person B">("All");
+  const [selectedSortFilter, setSelectedSortFilter] = useState<"All" | "Ascending" | "Descending" | "Visits" | "Total Time">("All");
+
+  const { data: paginatedData, isLoading } = useDogCollars(rowsPerPage, currentPage - 1, selectedPersonFilter, selectedSortFilter); // currentPage - 1 for 0-based offset
   const [isExporting, setIsExporting] = useState(false);
 
   const data: DogCollar[] = paginatedData?.data || [];
@@ -99,10 +102,32 @@ export const DataTable = () => {
             Raw data collected from the sensors.
           </CardDescription>
         </div>
-        <Button onClick={handleExport} disabled={isExporting || !data.length}>
-          <Download className="mr-2 h-4 w-4" />
-          {isExporting ? "Exporting..." : "Export to CSV"}
-        </Button>
+        <div className="flex items-center space-x-2">
+          <select
+            value={selectedPersonFilter}
+            onChange={(e) => setSelectedPersonFilter(e.target.value as "All" | "Person A" | "Person B")}
+            className="p-2 border rounded-md bg-card text-foreground border-border"
+          >
+            <option value="All">All Persons</option>
+            <option value="Person A">Person A</option>
+            <option value="Person B">Person B</option>
+          </select>
+          <select
+            value={selectedSortFilter}
+            onChange={(e) => setSelectedSortFilter(e.target.value as "All" | "Ascending" | "Descending" | "Visits" | "Total Time")}
+            className="p-2 border rounded-md bg-card text-foreground border-border"
+          >
+            <option value="All">Sort By (Default)</option>
+            <option value="Ascending">Timestamp (Asc)</option>
+            <option value="Descending">Timestamp (Desc)</option>
+            <option value="Visits">Visits</option>
+            <option value="Total Time">Total Time</option>
+          </select>
+          <Button onClick={handleExport} disabled={isExporting || !data.length}>
+            <Download className="mr-2 h-4 w-4" />
+            {isExporting ? "Exporting..." : "Export to CSV"}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
