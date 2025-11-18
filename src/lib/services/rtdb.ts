@@ -1,4 +1,4 @@
-import { ref, get, onValue, off } from 'firebase/database';
+import { ref, get, onValue } from 'firebase/database';
 import { rtdb } from '../firebase';
 
 type PersonData = {
