@@ -39,7 +39,7 @@ export const addDocument = async <T>(collectionName: string, data: T): Promise<s
     ...data,
     timestamp: new Date().toISOString() // Add current timestamp in ISO format
   };
-  const docRef: DocumentReference<DocumentData> = await addDoc(collection(db, collectionName), docData as any);
+  const docRef: DocumentReference<DocumentData> = await addDoc(collection(db, collectionName), docData as DocumentData);
   return docRef.id;
 };
 
@@ -51,7 +51,7 @@ export const updateDocument = async <T>(collectionName: string, id: string, data
     updatedAt: new Date().toISOString() // Add update timestamp
   };
   const docRef: DocumentReference<DocumentData> = doc(db, collectionName, id);
-  await updateDoc(docRef, updateData as any);
+  await updateDoc(docRef, updateData as DocumentData);
 };
 
 // Generic function to delete a document from a collection
@@ -65,7 +65,7 @@ export const getRecentPersonA = async <T>(): Promise<T[]> => {
   const q = query(
     collection(db, "PersonA"),
     orderBy("timestamp", "desc"),
-    limit(1)
+    limit(100)
   );
   const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as T));
@@ -76,7 +76,7 @@ export const getRecentPersonB = async <T>(): Promise<T[]> => {
   const q = query(
     collection(db, "PersonB"),
     orderBy("timestamp", "desc"),
-    limit(1)
+    limit(100)
   );
   const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as T));

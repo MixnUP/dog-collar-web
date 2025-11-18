@@ -8,90 +8,62 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useRecentPersonA, useRecentPersonB } from "@/lib/hooks/useDogCollars";
+import { useDogCollars } from "@/lib/hooks/useDogCollars";
 import { unparse } from "papaparse";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Download, List } from "lucide-react";
-import { onVisitsUpdate } from "@/lib/services/rtdb";
+
+import { Timestamp } from "firebase/firestore";
 
 // Helper function to format timestamp
-const formatTimestamp = (timestamp: any) => {
+const formatTimestamp = (timestamp: Date | Timestamp | string | number | undefined): string => {
   if (!timestamp) return 'N/A';
   
-  // If it's a Firestore timestamp
-  if (timestamp.toDate) {
-    return new Date(timestamp.toDate()).toLocaleString();
+  let date: Date;
+  if (typeof timestamp === 'string' || typeof timestamp === 'number') {
+    date = new Date(timestamp);
+  } else if (timestamp instanceof Timestamp) {
+    date = timestamp.toDate();
+  } else if (timestamp instanceof Date) {
+    date = timestamp;
+  } else {
+    return 'Invalid Date Type';
   }
-  
-  // If it's already a date string or number
-  const date = new Date(timestamp);
+
   return isNaN(date.getTime()) ? 'Invalid Date' : date.toLocaleString();
 };
 
-type PersonData = {
+// Helper function to format total time in seconds to a human-readable format (e.g., "1m 30s")
+const formatTotalTime = (seconds: number | undefined): string => {
+  if (seconds === undefined || seconds === null) return 'N/A';
+  if (seconds < 0) return 'Invalid';
+  
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  
+  if (minutes > 0) {
+    return `${minutes}m ${remainingSeconds.toString().padStart(2, '0')}s`;
+  }
+  return `${remainingSeconds}s`;
+};
+
+type DogCollar = {
   id: string;
   person: string;
-  near_time_start?: any;
-  near_time_end?: any;
+  near_time_start?: Timestamp | Date | string;
+  near_time_end?: Timestamp | Date | string;
   visits?: number;
   proximity?: number;
   total_time?: number;
-  timestamp?: any;
-  [key: string]: any;
-};
-
-type VisitsData = {
-  personA: {
-    visits: number;
-    proximity: number;
-    total_time: number;
-  };
-  personB: {
-    visits: number;
-    proximity: number;
-    total_time: number;
-  };
+  timestamp?: Timestamp | Date | string;
 };
 
 export const DataTable = () => {
-  const { data: personAData, isLoading: isLoadingA } = useRecentPersonA<PersonData>();
-  const { data: personBData, isLoading: isLoadingB } = useRecentPersonB<PersonData>();
+  const { data: dogCollars, isLoading } = useDogCollars();
   const [isExporting, setIsExporting] = useState(false);
-  const [visitsData, setVisitsData] = useState<VisitsData>({
-    personA: { visits: 0, proximity: 0, total_time: 0 },
-    personB: { visits: 0, proximity: 0, total_time: 0 }
-  });
-
-  // Set up realtime listener for visits data
-  useEffect(() => {
-    const unsubscribe = onVisitsUpdate((data) => {
-      setVisitsData(data);
-    });
-    
-    return () => unsubscribe();
-  }, []);
 
   // Transform the data to include person identifier and format timestamps
-  const data = [
-    {
-      id: 'person-a',
-      person: 'Person A',
-      visits: visitsData.personA.visits,
-      proximity: visitsData.personA.proximity,
-      total_time: visitsData.personA.total_time,
-      near_time_start: personAData?.[0]?.timestamp || new Date().toISOString(),
-      near_time_end: personAData?.[0]?.timestamp || new Date().toISOString(),
-    },
-    {
-      id: 'person-b',
-      person: 'Person B',
-      visits: visitsData.personB.visits,
-      proximity: visitsData.personB.proximity,
-      total_time: visitsData.personB.total_time,
-      near_time_start: personBData?.[0]?.timestamp || new Date().toISOString(),
-      near_time_end: personBData?.[0]?.timestamp || new Date().toISOString(),
-    }
-  ];
+  const data: DogCollar[] = dogCollars || [];
 
   const handleExport = () => {
     setIsExporting(true);
@@ -108,7 +80,7 @@ export const DataTable = () => {
     setTimeout(() => setIsExporting(false), 500);
   };
 
-  const isLoading = isLoadingA || isLoadingB;
+  // const isLoading = isLoadingA || isLoadingB; // Removed as useDogCollars provides its own isLoading
 
   return (
     <Card className="bg-card border-border backdrop-blur-sm">
@@ -138,31 +110,31 @@ export const DataTable = () => {
                 <TableHead className="text-primary-foreground">Total Time</TableHead>
                 <TableHead className="text-primary-foreground">Near Time Start</TableHead>
                 <TableHead className="text-primary-foreground">Near Time End</TableHead>
+                <TableHead className="text-primary-foreground">Timestamp</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
+                  <TableCell colSpan={7} className="h-24 text-center">
                     Loading...
                   </TableCell>
                 </TableRow>
               ) : data.length > 0 ? (
                 data.map((row) => (
                   <TableRow key={row.id} className="border-border/50">
-                    <TableCell className="font-medium">
-                      {row.person}
-                    </TableCell>
+                    <TableCell className="font-medium">{row.person}</TableCell>
                     <TableCell>{row.visits ?? 'N/A'}</TableCell>
-                    <TableCell>{row.proximity ?? 'N/A'}</TableCell>
-                    <TableCell>{row.total_time ? `${Math.floor(row.total_time / 60)}m ${row.total_time % 60}s` : 'N/A'}</TableCell>
+                    <TableCell>{row.proximity?.toFixed(2) ?? 'N/A'}</TableCell>
+                    <TableCell>{formatTotalTime(row.total_time)}</TableCell>
                     <TableCell>{formatTimestamp(row.near_time_start)}</TableCell>
                     <TableCell>{formatTimestamp(row.near_time_end)}</TableCell>
+                    <TableCell>{formatTimestamp(row.timestamp)}</TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
+                  <TableCell colSpan={7} className="h-24 text-center">
                     No data available.
                   </TableCell>
                 </TableRow>
