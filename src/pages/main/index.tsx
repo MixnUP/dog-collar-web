@@ -23,6 +23,16 @@ const formatTime = (milliseconds: number | undefined): string => {
   return parts.join(' ');
 };
 
+// Helper function to safely format date strings
+const formatTimeString = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? 'Just now' : date.toLocaleTimeString();
+  } catch (e) {
+    return 'Just now';
+  }
+};
+
 const MainPage = () => {
   const { 
     personA, 
@@ -123,7 +133,7 @@ const MainPage = () => {
               <span>Person A Status</span>
               {personA?.last_updated && (
                 <span className="text-xs text-muted-foreground ml-auto">
-                  Updated: {new Date(personA.last_updated).toLocaleTimeString()}
+                  Updated: {formatTimeString(personA.last_updated)}
                 </span>
               )}
             </CardTitle>
@@ -147,7 +157,7 @@ const MainPage = () => {
               <span>Person B Status</span>
               {personB?.last_updated && (
                 <span className="text-xs text-muted-foreground ml-auto">
-                  Updated: {new Date(personB.last_updated).toLocaleTimeString()}
+                  Updated: {formatTimeString(personB.last_updated)}
                 </span>
               )}
             </CardTitle>
