@@ -114,6 +114,53 @@ export const useDogCollars = (limit: number, offset: number, personFilter: "All"
   });
 };
 
+export const useAllDogCollarsData = () => {
+  return useQuery<{ data: DogCollar[], totalCount: number }, Error>({
+    queryKey: ["all-dog-collars"],
+    queryFn: async () => {
+      const fetchAndMapAllData = async (collectionName: string, personId: "Person A" | "Person B") => {
+        const q = query(collection(db, collectionName), orderBy("timestamp", "desc")); // Default sort for export
+        const docs = await getDocs(q);
+        return docs.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            person: personId,
+            ...data,
+            timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : data.timestamp,
+            near_time_start: data.near_time_start?.toDate ? data.near_time_start.toDate() : data.near_time_start,
+            near_time_end: data.near_time_end?.toDate ? data.near_time_end.toDate() : data.near_time_end,
+            total_time: data.total_time ?? data.totalTime ?? 0,
+            visits: data.visits ?? 0,
+            proximity: data.proximity ?? 0
+          };
+        });
+      };
+
+      const personAData = await fetchAndMapAllData(COLLECTION_NAMES.PERSON_A, "Person A");
+      const personBData = await fetchAndMapAllData(COLLECTION_NAMES.PERSON_B, "Person B");
+
+      let mergedData = [...personAData, ...personBData];
+
+      mergedData.sort((a, b) => {
+        const toMilliseconds = (timestamp: string | Date | Timestamp | undefined): number => {
+          if (!timestamp) return 0;
+          if (timestamp instanceof Date) return timestamp.getTime();
+          if (typeof timestamp === 'string') return new Date(timestamp).getTime();
+          if (timestamp.toDate) return timestamp.toDate().getTime();
+          return 0;
+        };
+        
+        const dateA = toMilliseconds(a.timestamp);
+        const dateB = toMilliseconds(b.timestamp);
+        return dateB - dateA; // Default descending sort by timestamp
+      });
+
+      return { data: mergedData, totalCount: mergedData.length };
+    },
+  });
+};
+
 export const useDogCollar = (id: string) => {
   return useQuery<DogCollar | null, Error>({
     queryKey: ["dog-collar", id],

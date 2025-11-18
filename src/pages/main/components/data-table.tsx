@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useDogCollars } from "@/lib/hooks/useDogCollars";
+import { useDogCollars, useAllDogCollarsData } from "@/lib/hooks/useDogCollars";
 import { unparse } from "papaparse";
 import { useState } from "react";
 import { Download, List } from "lucide-react";
@@ -65,6 +65,7 @@ export const DataTable = () => {
   const [selectedSortFilter, setSelectedSortFilter] = useState<"All" | "Ascending" | "Descending" | "Visits" | "Total Time">("All");
 
   const { data: paginatedData, isLoading } = useDogCollars(rowsPerPage, currentPage - 1, selectedPersonFilter, selectedSortFilter); // currentPage - 1 for 0-based offset
+  const { data: allDataForExport, isLoading: isLoadingAllData } = useAllDogCollarsData();
   const [isExporting, setIsExporting] = useState(false);
 
   const data: DogCollar[] = paginatedData?.data || [];
@@ -75,7 +76,14 @@ export const DataTable = () => {
 
   const handleExport = () => {
     setIsExporting(true);
-    const csv = unparse(data);
+    const exportData = (allDataForExport?.data || []).map(row => ({
+      Person: row.person,
+      Visits: row.visits ?? 'N/A',
+      Proximity: row.proximity?.toFixed(2) ?? 'N/A',
+      "Total Time": formatTotalTime(row.total_time),
+      Timestamp: formatTimestamp(row.timestamp),
+    }));
+    const csv = unparse(exportData);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -123,7 +131,7 @@ export const DataTable = () => {
             <option value="Visits">Visits</option>
             <option value="Total Time">Total Time</option>
           </select>
-          <Button onClick={handleExport} disabled={isExporting || !data.length}>
+          <Button onClick={handleExport} disabled={isExporting || isLoadingAllData || !allDataForExport?.data.length}>
             <Download className="mr-2 h-4 w-4" />
             {isExporting ? "Exporting..." : "Export to CSV"}
           </Button>
