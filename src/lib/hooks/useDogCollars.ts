@@ -114,12 +114,32 @@ export const useDogCollars = (limit: number, offset: number, personFilter: "All"
   });
 };
 
-export const useAllDogCollarsData = () => {
+export const useAllDogCollarsData = (personFilter: "All" | "Person A" | "Person B", sortFilter: "All" | "Ascending" | "Descending" | "Visits" | "Total Time") => {
   return useQuery<{ data: DogCollar[], totalCount: number }, Error>({
-    queryKey: ["all-dog-collars"],
+    queryKey: ["all-dog-collars", { personFilter, sortFilter }],
     queryFn: async () => {
+      let personAData: DogCollar[] = [];
+      let personBData: DogCollar[] = [];
+
+      const getOrderByClause = (filter: typeof sortFilter) => {
+        switch (filter) {
+          case "Ascending":
+            return orderBy("timestamp", "asc");
+          case "Visits":
+            return orderBy("visits", "desc");
+          case "Total Time":
+            return orderBy("totalTime", "desc");
+          case "Descending":
+          case "All":
+          default:
+            return orderBy("timestamp", "desc");
+        }
+      };
+
+      const orderByClause = getOrderByClause(sortFilter);
+
       const fetchAndMapAllData = async (collectionName: string, personId: "Person A" | "Person B") => {
-        const q = query(collection(db, collectionName), orderBy("timestamp", "desc")); // Default sort for export
+        const q = query(collection(db, collectionName), orderByClause);
         const docs = await getDocs(q);
         return docs.docs.map(doc => {
           const data = doc.data();
@@ -137,12 +157,22 @@ export const useAllDogCollarsData = () => {
         });
       };
 
-      const personAData = await fetchAndMapAllData(COLLECTION_NAMES.PERSON_A, "Person A");
-      const personBData = await fetchAndMapAllData(COLLECTION_NAMES.PERSON_B, "Person B");
+      if (personFilter === "All" || personFilter === "Person A") {
+        personAData = await fetchAndMapAllData(COLLECTION_NAMES.PERSON_A, "Person A");
+      }
+      if (personFilter === "All" || personFilter === "Person B") {
+        personBData = await fetchAndMapAllData(COLLECTION_NAMES.PERSON_B, "Person B");
+      }
 
       let mergedData = [...personAData, ...personBData];
 
       mergedData.sort((a, b) => {
+        if (sortFilter === "Visits") {
+          return (b.visits ?? 0) - (a.visits ?? 0);
+        }
+        if (sortFilter === "Total Time") {
+          return (b.total_time ?? 0) - (a.total_time ?? 0);
+        }
         const toMilliseconds = (timestamp: string | Date | Timestamp | undefined): number => {
           if (!timestamp) return 0;
           if (timestamp instanceof Date) return timestamp.getTime();
@@ -153,7 +183,7 @@ export const useAllDogCollarsData = () => {
         
         const dateA = toMilliseconds(a.timestamp);
         const dateB = toMilliseconds(b.timestamp);
-        return dateB - dateA; // Default descending sort by timestamp
+        return sortFilter === "Ascending" ? dateA - dateB : dateB - dateA;
       });
 
       return { data: mergedData, totalCount: mergedData.length };

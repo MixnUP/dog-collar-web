@@ -65,7 +65,7 @@ export const DataTable = () => {
   const [selectedSortFilter, setSelectedSortFilter] = useState<"All" | "Ascending" | "Descending" | "Visits" | "Total Time">("All");
 
   const { data: paginatedData, isLoading } = useDogCollars(rowsPerPage, currentPage - 1, selectedPersonFilter, selectedSortFilter); // currentPage - 1 for 0-based offset
-  const { data: allDataForExport, isLoading: isLoadingAllData } = useAllDogCollarsData();
+  const { data: allDataForExport, isLoading: isLoadingAllData } = useAllDogCollarsData(selectedPersonFilter, selectedSortFilter);
   const [isExporting, setIsExporting] = useState(false);
 
   const data: DogCollar[] = paginatedData?.data || [];
