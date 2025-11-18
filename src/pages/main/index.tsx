@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3 } from "lucide-react";
 import { DataTable } from "./components/data-table";
+import VisitsBarChart from "./components/VisitsBarChart"; // Import the new component
 import { useDogCollarStore } from "@/stores/dog-collar-store";
 
 // Helper function to format time in seconds to a readable format
@@ -83,28 +84,29 @@ const MainPage = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
-              <div className="h-80 rounded-lg flex items-center justify-center bg-background/40 border-2 border-dashed border-primary">
-                <div className="text-center text-muted-foreground">
-                  <BarChart3 className="h-12 w-12 mx-auto mb-2" />
-                  <p>Graph Placeholder</p>
-                </div>
-              </div>
+              <VisitsBarChart /> {/* Replaced the placeholder with the actual chart component */}
             </div>
             <div className="md:col-span-1">
-              <h3 className="text-lg font-semibold mb-4">Graph Legend</h3>
+              <h3 className="text-lg font-semibold mb-4">Visits Summary</h3>
               <div className="space-y-2">
-                <div className="flex items-center">
-                  <span className="h-4 w-4 rounded-full bg-primary mr-2"></span>
-                  <span>Proximity Group A</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="h-4 w-4 rounded-full bg-accent mr-2"></span>
-                  <span>Proximity Group B</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="h-4 w-4 rounded-full bg-secondary mr-2"></span>
-                  <span>Proximity Group C</span>
-                </div>
+                {personA && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <span className="h-4 w-4 rounded-full bg-primary mr-2"></span>
+                      <span>Person A</span>
+                    </div>
+                    <span className="text-muted-foreground">{personA.visits} visits</span>
+                  </div>
+                )}
+                {personB && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <span className="h-4 w-4 rounded-full bg-accent mr-2"></span>
+                      <span>Person B</span>
+                    </div>
+                    <span className="text-muted-foreground">{personB.visits} visits</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
