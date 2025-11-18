@@ -108,15 +108,13 @@ export const DataTable = () => {
                 <TableHead className="text-primary-foreground">Visits</TableHead>
                 <TableHead className="text-primary-foreground">Proximity</TableHead>
                 <TableHead className="text-primary-foreground">Total Time</TableHead>
-                <TableHead className="text-primary-foreground">Near Time Start</TableHead>
-                <TableHead className="text-primary-foreground">Near Time End</TableHead>
                 <TableHead className="text-primary-foreground">Timestamp</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     Loading...
                   </TableCell>
                 </TableRow>
@@ -127,14 +125,12 @@ export const DataTable = () => {
                     <TableCell>{row.visits ?? 'N/A'}</TableCell>
                     <TableCell>{row.proximity?.toFixed(2) ?? 'N/A'}</TableCell>
                     <TableCell>{formatTotalTime(row.total_time)}</TableCell>
-                    <TableCell>{formatTimestamp(row.near_time_start)}</TableCell>
-                    <TableCell>{formatTimestamp(row.near_time_end)}</TableCell>
                     <TableCell>{formatTimestamp(row.timestamp)}</TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     No data available.
                   </TableCell>
                 </TableRow>
