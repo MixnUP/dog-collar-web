@@ -19,8 +19,8 @@ const VisitsBarChart: React.FC = () => {
   useEffect(() => {
     const unsubscribe = onVisitsUpdate((data) => {
       setChartData([
-        { name: 'Proximity Group A', visits: data.personA.visits, fill: COLORS.personA },
-        { name: 'Proximity Group B', visits: data.personB.visits, fill: COLORS.personB },
+        { name: 'Person A', visits: data.personA.visits, fill: COLORS.personA },
+        { name: 'Person B', visits: data.personB.visits, fill: COLORS.personB },
       ]);
     });
 
