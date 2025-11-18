@@ -46,6 +46,7 @@ const VisitsBarChart: React.FC = () => {
           <XAxis dataKey="name" />
           <YAxis label={{ value: 'Number of Visits', angle: -90, position: 'insideLeft' }} />
           <Tooltip 
+            cursor={false}
             formatter={(value) => [`${value} visits`, 'Visits']}
             contentStyle={{
               backgroundColor: '#FFFFFF',
